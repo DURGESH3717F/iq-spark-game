@@ -1,0 +1,1145 @@
+
+
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px; /* Added padding for very small screens */
+            text-align: center;
+            position: relative;
+            font-size: 16px; /* Base font size */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 25px 30px; /* Adjusted padding */
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%; /* Make it take full width available from body padding */
+            min-height: 90vh; /* Use viewport height to ensure it fits */
+            max-height: 95vh; /* Prevent it from being too tall and causing body scroll */
+            overflow-y: auto; /* Allow scrolling within container if content overflows */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out;
+            position: relative;
+        }
+
+        #musicToggleButton {
+            position: fixed;
+            top: 15px; /* Adjusted */
+            right: 15px; /* Adjusted */
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px; /* Adjusted */
+            font-size: 0.85em; /* Adjusted */
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        #musicToggleButton:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .welcome-screen h1, .results-screen h1 {
+            font-size: 2.2em; /* Base size */
+            color: #2c3e50;
+            margin-bottom: 15px; /* Adjusted */
+            font-weight: 700;
+        }
+
+        .welcome-screen p {
+            font-size: 1em; /* Base size */
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 12px; /* Adjusted */
+        }
+        .welcome-screen .disclaimer, .results-screen .disclaimer {
+            font-size: 0.85em; /* Base size */
+            color: #6c757d;
+            margin-bottom: 15px; /* Adjusted */
+            font-style: italic;
+        }
+        .num-questions-selection {
+            margin-bottom: 20px; /* Adjusted */
+        }
+        .num-questions-selection h3 {
+            margin-bottom: 10px;
+            color: #495057;
+            font-size: 1.1em;
+        }
+        .num-questions-button {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 18px; /* Adjusted */
+            font-size: 0.95em; /* Adjusted */
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px; /* Allow wrapping */
+            transition: background-color 0.3s ease;
+        }
+        .num-questions-button:hover, .num-questions-button.selected {
+            background-color: #007bff;
+        }
+        .num-questions-button.selected {
+            box-shadow: 0 0 0 2px #0056b3;
+        }
+        #highScoreDisplay {
+            font-size: 0.9em; /* Adjusted */
+            color: #495057;
+            margin-bottom: 15px; /* Adjusted */
+        }
+
+
+        .start-button, .results-button, .hint-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 22px; /* Adjusted */
+            font-size: 1em; /* Adjusted */
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Adjusted */
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 8px; /* Adjusted */
+            margin-bottom: 5px; /* Added for stacking */
+            width: auto; /* Allow natural width */
+            min-width: 150px; /* Ensure decent width */
+        }
+        .results-button.share {
+            background-color: #17a2b8;
+            margin-left: 0; /* Will be stacked on mobile */
+        }
+        .hint-button {
+            background-color: #ffc107;
+            color: #333;
+            font-size: 0.85em; /* Adjusted */
+            padding: 8px 15px;
+            margin-top: 0;
+            margin-bottom: 12px; /* Adjusted */
+            min-width: 120px;
+        }
+        .hint-button:disabled {
+            background-color: #e0a800;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .start-button:hover, .results-button:hover, .hint-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); /* Adjusted */
+        }
+        .start-button:hover, .results-button:hover { background-color: #0056b3; }
+        .results-button.share:hover { background-color: #117a8b; }
+        .hint-button:hover:not(:disabled) { background-color: #e0a800; }
+
+
+        .puzzle-screen {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 5px; /* Gap between items if they wrap */
+            width: 100%;
+            margin-bottom: 12px; /* Adjusted */
+            font-size: 0.9em; /* Adjusted */
+            color: #555;
+        }
+        .progress-indicator, .timer, .streak-counter {
+            background-color: #e9ecef;
+            padding: 7px 10px; /* Adjusted */
+            border-radius: 6px;
+            font-weight: 600;
+            flex-grow: 1; /* Allow them to grow */
+            text-align: center; /* Center text within them */
+        }
+        .streak-counter { color: #28a745; }
+        .timer { min-width: 70px; text-align: center; }
+
+
+        .puzzle-content {
+            margin-bottom: 15px; /* Adjusted */
+            width: 100%;
+            min-height: 120px; /* Adjusted */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .puzzle-instruction { font-size: 1em; color: #495057; margin-bottom: 12px; font-weight: 500; }
+        .memory-items-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 15px; min-height: 40px; font-size: 1.3em; /* For emojis/symbols */ }
+        .memory-item { background-color: #007bff; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3); }
+        .memory-item.hint-reveal { animation: pulse 1s ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
+
+
+        .puzzle-question { font-size: 1.25em; color: #34495e; margin-bottom: 18px; line-height: 1.5; }
+        .answer-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; width: 100%; }
+        .answer-button {
+            background-color: #f8f9fa; color: #333; border: 1px solid #ced4da; padding: 12px; /* Adjusted */
+            font-size: 1.1em; /* Adjusted for emojis/symbols */ font-weight: 500; border-radius: 8px; cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            line-height: 1.4; /* Better spacing for emojis */
+            min-height: 50px; /* Ensure decent tap height */
+            display: flex; /* For centering content if needed */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .answer-button:hover { background-color: #e9ecef; border-color: #adb5bd; box-shadow: 0 3px 6px rgba(0,0,0,0.07); }
+        .answer-button:active { transform: scale(0.98); background-color: #dde2e6; }
+        .answer-button.correct { background-color: #28a745; color: white; border-color: #28a745; }
+        .answer-button.incorrect { background-color: #dc3545; color: white; border-color: #dc3545; }
+        .answer-button.disabled, .answer-button.hint-removed { pointer-events: none; opacity: 0.5; }
+        .answer-button.hint-removed { background-color: #e9ecef; border-color: #ced4da; }
+
+
+        .reflex-target {
+            width: 90px; height: 90px; /* Slightly adjusted */ border-radius: 50%; cursor: pointer; margin: 15px 0 8px 0;
+            transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            font-size: 1.8em; /* For emoji reflex target */
+        }
+        .reflex-feedback { font-size: 0.95em; color: #333; height: 18px; margin-top: 8px; }
+
+        .results-screen p { font-size: 1em; color: #555; line-height: 1.6; margin-bottom: 10px; }
+        .results-screen .score-value { font-weight: 700; color: #007bff; font-size: 1.2em; }
+        .results-screen .cpi-estimate { font-weight: 700; color: #28a745; font-size: 1.2em; }
+        .results-screen .personality-title { font-size: 1.3em; color: #343a40; margin-top: 15px; margin-bottom: 6px; font-weight: 600; }
+        .results-screen .personality-description { font-size: 0.95em; color: #6c757d; margin-bottom: 15px; max-width: 90%; margin-left: auto; margin-right: auto; }
+        .results-buttons-container { margin-top: 15px; display: flex; flex-direction: column; align-items: center; }
+        .results-buttons-container .results-button {
+            width: 80%; /* Make buttons wider in results on mobile */
+            margin-bottom: 10px;
+        }
+
+
+        .achievements-section { margin-top: 20px; padding-top: 12px; border-top: 1px solid #e0e0e0; }
+        .achievements-section h3 { color: #495057; margin-bottom: 8px; font-size: 1.1em; }
+        .achievement-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;}
+        .achievement-item {
+            background-color: #e9ecef; color: #28a745; border: 1px solid #ced4da;
+            padding: 7px 10px; border-radius: 6px;
+            font-size: 0.8em;
+        }
+         .achievement-item.locked {
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+
+        .hidden { display: none !important; }
+        .fade-out { opacity: 0; }
+        .fade-in { opacity: 1; }
+
+        /* Mobile specific optimizations */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px; 
+                font-size: 15px; 
+            }
+            .container {
+                padding: 15px 18px; /* Slightly less horizontal padding */
+                min-height: 0; 
+            }
+
+            .welcome-screen h1, .results-screen h1 { font-size: 1.7em; margin-bottom: 10px; } /* Adjusted */
+            .welcome-screen p { font-size: 0.9em; margin-bottom: 8px;} /* Adjusted */
+            .welcome-screen .disclaimer, .results-screen .disclaimer { font-size: 0.75em; margin-bottom: 10px;} /* Adjusted */
+
+            .num-questions-selection { margin-bottom: 12px; } /* Adjusted */
+            .num-questions-selection h3 { font-size: 0.95em; } /* Adjusted */
+            .num-questions-button {
+                padding: 8px 10px; font-size: 0.85em; /* Adjusted */
+                width: calc(50% - 8px); /* Adjusted for tighter fit */
+                margin: 4px;
+            }
+            .num-questions-selection {
+                 display: flex;
+                 flex-wrap: wrap;
+                 justify-content: center;
+            }
+
+
+            .start-button, .results-button {
+                width: 100%; 
+                padding: 11px 15px; /* Adjusted */
+                font-size: 0.95em; /* Adjusted */
+            }
+             .results-buttons-container .results-button { /* More specific for results screen */
+                width: 90%; /* Wider buttons on results for mobile */
+            }
+
+            .game-header {
+                font-size: 0.8em; /* Adjusted */
+                margin-bottom: 8px; /* Adjusted */
+            }
+            .progress-indicator, .timer, .streak-counter {
+                 padding: 5px 7px; /* Adjusted */
+                 min-width: 55px; 
+            }
+
+
+            .puzzle-content { min-height: 90px; margin-bottom: 8px; } /* Adjusted */
+            .puzzle-instruction { font-size: 0.9em; margin-bottom: 8px;} /* Adjusted */
+            .memory-items-display { font-size: 1.15em; gap: 5px; margin-bottom: 10px;} /* Adjusted */
+            .memory-item { padding: 5px 10px; } /* Adjusted */
+
+            .puzzle-question { font-size: 1.05em; margin-bottom: 12px; } /* Adjusted */
+            .answer-options { grid-template-columns: 1fr; gap: 7px; } /* Adjusted */
+            .answer-button { padding: 10px; font-size: 0.95em; min-height: 42px; } /* Adjusted */
+
+            .reflex-target { width: 75px; height: 75px; font-size: 1.5em; margin: 10px 0 5px 0;} /* Adjusted */
+            .reflex-feedback { font-size: 0.85em; height: 15px; margin-top: 5px;} /* Adjusted */
+
+            .results-screen p { font-size: 0.9em; } /* Adjusted */
+            .results-screen .score-value, .results-screen .cpi-estimate { font-size: 1.05em; } /* Adjusted */
+            .results-screen .personality-title { font-size: 1.15em; margin-top: 10px;} /* Adjusted */
+            .results-screen .personality-description { font-size: 0.85em; } /* Adjusted */
+
+            .achievement-list { gap: 4px; } /* Adjusted */
+            .achievement-item { font-size: 0.7em; padding: 5px 7px;} /* Adjusted */
+        }
+
+        @media (max-width: 400px) { /* Even smaller screens */
+            body {
+                padding: 8px; 
+                font-size: 14px; 
+            }
+            .container {
+                padding: 12px 15px; 
+            }
+            .num-questions-button {
+                width: 100%; 
+                padding: 7px 10px; font-size: 0.85em;
+            }
+            .game-header {
+                flex-direction: column; 
+                gap: 3px;
+            }
+            .progress-indicator, .timer, .streak-counter {
+                 width: 100%; 
+                 padding: 5px 7px;
+            }
+            .welcome-screen h1, .results-screen h1 { font-size: 1.5em;}
+            .welcome-screen p { font-size: 0.85em; margin-bottom: 8px; }
+            .start-button, .results-button { padding: 10px 12px; font-size: 0.9em; }
+            .hint-button { padding: 7px 10px; font-size: 0.8em; }
+            
+            .puzzle-instruction { font-size: 0.85em; margin-bottom: 8px; }
+            .memory-items-display { font-size: 1.1em; gap: 4px; margin-bottom: 8px;}
+            .memory-item { padding: 4px 8px; }
+            .puzzle-question { font-size: 1em; margin-bottom: 10px; }
+            .answer-button { padding: 9px; font-size: 0.9em; min-height: 40px; }
+            .reflex-target { width: 70px; height: 70px; font-size: 1.4em; }
+            
+            .results-screen p { font-size: 0.85em; }
+            .results-screen .score-value, .results-screen .cpi-estimate { font-size: 1em; }
+            .results-screen .personality-title { font-size: 1.1em; }
+            .results-screen .personality-description { font-size: 0.8em; }
+        }
+
+    </style>
+</head>
+<body>
+    <button id="musicToggleButton">Music: OFF</button>
+
+    <div class="container" id="mainContainer">
+        <div id="welcomeScreen" class="welcome-screen fade-in">
+            <h1>Mind Spark Challenge</h1>
+            <p>Test your cognitive skills with engaging puzzles and discover your mental agility.</p>
+            <div class="num-questions-selection">
+                <h3>Select Number of Questions:</h3>
+                <button class="num-questions-button selected" data-count="10" onclick="selectNumQuestions(10, this)">10 Questions</button>
+                <button class="num-questions-button" data-count="25" onclick="selectNumQuestions(25, this)">25 Questions</button>
+                <button class="num-questions-button" data-count="50" onclick="selectNumQuestions(50, this)">50 Questions</button>
+            </div>
+            <div id="highScoreDisplay">High Score (10 Questions): 0</div>
+            <p class="disclaimer">This is for fun and self-reflection, not a clinical IQ test.</p>
+            <button class="start-button" onclick="startGame()">Start Test</button>
+        </div>
+
+        <div id="puzzleScreen" class="puzzle-screen hidden">
+            <div class="game-header">
+                <div id="progressIndicator" class="progress-indicator">Puzzle X of Y</div>
+                <div id="streakCounter" class="streak-counter">Streak: 0</div>
+                <div id="timer" class="timer">Time: 00s</div>
+            </div>
+            <div class="puzzle-content">
+                <p id="puzzleInstruction" class="puzzle-instruction"></p>
+                <div id="memoryItemsDisplay" class="memory-items-display"></div>
+                <p id="puzzleQuestion" class="puzzle-question"></p>
+                <div id="reflexFeedback" class="reflex-feedback"></div>
+            </div>
+            <button id="hintButton" class="hint-button" onclick="useHint()">Use Hint (-2 Pts)</button>
+            <div id="answerOptions" class="answer-options"></div>
+        </div>
+
+        <div id="resultsScreen" class="results-screen hidden" style="text-align: center;">
+            <!-- Content generated by JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const mainContainer = document.getElementById('mainContainer');
+        const welcomeScreenDiv = document.getElementById('welcomeScreen');
+        const puzzleScreenDiv = document.getElementById('puzzleScreen');
+        const resultsScreenDiv = document.getElementById('resultsScreen');
+        const musicToggleButton = document.getElementById('musicToggleButton');
+        const progressIndicatorEl = document.getElementById('progressIndicator');
+        const timerEl = document.getElementById('timer');
+        const puzzleContentEl = document.querySelector('.puzzle-content');
+        const puzzleInstructionEl = document.getElementById('puzzleInstruction');
+        const memoryItemsDisplayEl = document.getElementById('memoryItemsDisplay');
+        const puzzleQuestionEl = document.getElementById('puzzleQuestion');
+        const answerOptionsEl = document.getElementById('answerOptions');
+        const reflexFeedbackEl = document.getElementById('reflexFeedback');
+        const streakCounterEl = document.getElementById('streakCounter');
+        const hintButton = document.getElementById('hintButton');
+        const highScoreDisplayEl = document.getElementById('highScoreDisplay');
+
+        // --- Game Config ---
+        let NUMBER_OF_PUZZLES_PER_GAME = 10;
+        const DEFAULT_PUZZLE_TIME_LIMIT_SECONDS = 30;
+        const STREAK_BONUS_POINTS = 2;
+        const HINT_PENALTY_POINTS = 2;
+
+        // --- Game State Variables ---
+        let currentPuzzleIndex = 0;
+        let score = 0;
+        let currentStreak = 0;
+        let timerInterval;
+        let timeLeft = 0;
+        let reflexTargetEl = null;
+        let reflexColorChangeTimeoutId = null;
+        let reflexReactionTimeoutId = null;
+        let reflexReactionStartTimestamp = 0;
+        let reflexPuzzleActive = false;
+        let gamePuzzles = [];
+        let currentMaxPossibleScore = 0;
+        let hintUsedThisPuzzle = false;
+
+        // --- Audio State & Elements (Tone.js) ---
+        let backgroundMusicSynth = null;
+        let musicPlaying = false;
+        let correctSound, incorrectSound, clickSound;
+
+        // --- Master Puzzle List (NEW - Based on OCR) ---
+        const masterPuzzleList = [
+            // --- OCR Q1-10: Logic & Deduction ---
+            { type: 'shape_pattern', question: "Pattern: ○ → □ → △ → ○ → □ → ___?", options: ["○", "□", "△", "☆"], correctAnswerIndex: 2, timeLimit: 15, maxPoints: 15 },
+            { type: 'emoji_logic', question: "Odd one out: 🚗 (Car) ✈️ (Plane) 🚲 (Bike) 🛴 (Scooter)", options: ["🚗", "✈️", "🚲", "🛴"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 15 },
+            { type: 'logic', question: "If all Floofs are Snerfs, and all Snerfs are Gleeps, are all Floofs Gleeps?", options: ["Yes", "No", "Only some", "Cannot tell"], correctAnswerIndex: 0, timeLimit: 20, maxPoints: 18 },
+            { type: 'logic', question: "Facing West, turn 270° CLOCKWISE. New direction?", options: ["North", "South", "East", "West"], correctAnswerIndex: 0, timeLimit: 25, maxPoints: 20 },
+            { type: 'emoji_logic', question: "Which doesn't belong: 🍎 (Apple) 🍌 (Banana) 🥕 (Carrot) 🍇 (Grape)?", options: ["🍎", "🍌", "🥕", "🍇"], correctAnswerIndex: 2, timeLimit: 15, maxPoints: 15 },
+            { type: 'pattern', question: "Sequence: 2, 4, 8, 16, ___, 64. Missing number?", options: ["24", "32", "36", "48"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 18 },
+            { type: 'arithmetic', question: "At 3:15, what's the smaller angle between clock hands?", options: ["0°", "7.5°", "15°", "22.5°"], correctAnswerIndex: 1, timeLimit: 40, maxPoints: 25 },
+            { type: 'riddle', question: "3 switches, 1 light in another room. To find the light's switch in one visit to the light room, you primarily use info from...", options: ["Sound", "Smell", "Bulb's Heat/Light", "Luck"], correctAnswerIndex: 2, timeLimit: 30, maxPoints: 22 },
+            { type: 'logic', question: "All pens are tools. Some tools are blue. Are all pens blue?", options: ["Yes", "No", "Maybe", "Only if tools are pens"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 18 },
+            { type: 'arithmetic', question: "Mia is 2 years older than twice her brother's age. He is 5. Mia's age?", options: ["10", "12", "14", "7"], correctAnswerIndex: 1, timeLimit: 25, maxPoints: 20 },
+
+            // --- OCR Q11-20: Pattern Recognition ---
+            { type: 'pattern', question: "Find missing: 1, 4, 9, 16, ___, 36", options: ["20", "24", "25", "30"], correctAnswerIndex: 2, timeLimit: 20, maxPoints: 18 },
+            { type: 'shape_pattern', question: "Sequence: ↑ → ↓ ← ↑ → ___?", options: ["↑", "→", "↓", "←"], correctAnswerIndex: 2, timeLimit: 18, maxPoints: 15 },
+            { type: 'pattern', question: "Spot repeating pattern: 1, 2, 1, 3, 1, 4, 1, ___?", options: ["1", "2", "3", "5"], correctAnswerIndex: 3, timeLimit: 20, maxPoints: 18 },
+            { type: 'pattern', question: "Next letter: A, C, F, J, O, ___? (A=1, B=2..)", options: ["S", "T", "U", "V"], correctAnswerIndex: 2, timeLimit: 25, maxPoints: 20 },
+            { type: 'shape_logic', question: "Which character is a mirror image of 'b'?", options: ["d", "p", "q", "g"], correctAnswerIndex: 0, timeLimit: 20, maxPoints: 18 },
+            { type: 'emoji_logic', question: "Which emoji is (approximately) vertically symmetrical: 😊 🤔 ↔️ 👍", options: ["😊 (Face)", "🤔 (Thinking)", "↔️ (Arrow)", "👍 (Thumbs Up)"], correctAnswerIndex: 0, timeLimit: 18, maxPoints: 15 },
+            { type: 'logic', question: "How many 'V' shapes are needed to form the letter 'W'?", options: ["1", "2", "3", "4"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 15 },
+            { type: 'shape_logic', question: "Which letter looks the same rotated 180°: P H D B", options: ["P", "H", "D", "B"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 18 },
+            { type: 'memory', instruction: "Count 🌟 in this sequence (shown briefly):", itemsToMemorize: ["🌟✨🪙✨🌟🪙🌟✨🌟"], memorizeDuration: 4000, recallQuestion: "How many 🌟 were in the sequence?", options: ["3", "4", "5", "6"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 20 },
+            { type: 'color_pattern', question: "Pattern: 🟥🟩🟦🟨🟥🟩🟦🟨... What's the 9th color?", options: ["🟥 (Red)", "🟩 (Green)", "🟦 (Blue)", "🟨 (Yellow)"], correctAnswerIndex: 0, timeLimit: 20, maxPoints: 18 },
+
+            // --- OCR Q21-30: Memory Test ---
+            { type: 'memory', instruction: "Memorize these Emojis:", itemsToMemorize: ["🚀", "🌍", "⭐", "🛰️", "👽"], memorizeDuration: 3000, recallQuestion: "Which emoji was NOT shown originally?", options: ["🛸 (UFO)", "🌍 (Earth)", "⭐ (Star)", "👽 (Alien)"], correctAnswerIndex: 0, timeLimit: 15, maxPoints: 20 },
+            { type: 'memory', instruction: "Memorize this number sequence:", itemsToMemorize: ["7", "2", "9", "4"], memorizeDuration: 2000, recallQuestion: "What was the second number in the sequence?", options: ["7", "2", "9", "4"], correctAnswerIndex: 1, timeLimit: 10, maxPoints: 18 },
+            { type: 'memory', instruction: "Memorize this color sequence:", itemsToMemorize: ["❤️", "💚", "💙", "💚"], memorizeDuration: 3000, recallQuestion: "If the sequence ❤️💚💙💚 repeats, what's next?", options: ["❤️", "💚", "💙", "💛"], correctAnswerIndex: 0, timeLimit: 15, maxPoints: 18 },
+            { type: 'memory', instruction: "Memorize: 🌟 at A1, 🔷 at B2", itemsToMemorize: ["A1:🌟", "B2:🔷"], memorizeDuration: 3000, recallQuestion: "What was at cell A1?", options: ["🌟", "🔷", "🚀", "❓"], correctAnswerIndex: 0, timeLimit: 10, maxPoints: 18 },
+            { type: 'memory', instruction: "Memorize this order of items:", itemsToMemorize: ["🔔", "🔑", "🎁"], memorizeDuration: 3000, recallQuestion: "What was the second item in the sequence?", options: ["🔔 (Bell)", "🔑 (Key)", "🎁 (Gift)", "🎈 (Balloon)"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 18 },
+            { type: 'memory', instruction: "Memorize these pairs:", itemsToMemorize: ["🌟-☀️", "🌙-🌌"], memorizeDuration: 4000, recallQuestion: "What was 🌟 paired with?", options: ["☀️ (Sun)", "🌙 (Moon)", "🌌 (Galaxy)", "☄️ (Comet)"], correctAnswerIndex: 0, timeLimit: 15, maxPoints: 20 },
+            { type: 'memory', instruction: "Observe the pattern: X O _ . It should be X O X.", itemsToMemorize: ["X O _ (Hint: it becomes X O X)"], memorizeDuration: 1, recallQuestion: "What was the missing item in X O _ to make it X O X?", options: ["X", "O", "Y", "Z"], correctAnswerIndex: 0, timeLimit: 15, maxPoints: 15 },
+            { type: 'anagram', question: "The word 'ELPPA' was shown backward. What was the original word?", options: ["PALE", "APPEAL", "APPLE", "APPLY"], correctAnswerIndex: 2, timeLimit: 20, maxPoints: 18 },
+            { type: 'verbal_logic', question: "Which of these words is spelled INCORRECTLY: Believe, Achieve, Receive, Deceive", options: ["Believe", "Achieve", "Receive", "Deceive"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 18 }, // Corrected "Achieve"
+            { type: 'memory', instruction: "Observe Face 1: 😊 then Face 2: 😉", itemsToMemorize: ["😊 (Initial)", "😉 (Changed)"], memorizeDuration: 3000, recallQuestion: "What primarily changed from Face 1 (😊) to Face 2 (😉)?", options: ["Mouth Shape", "Eye Expression (Wink)", "Nose Size", "Overall Color"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 18 },
+
+            // --- OCR Q31-40: Math & Reasoning ---
+            { type: 'arithmetic', question: "Calculate: 17 + 23 × 2 = ?", options: ["80", "63", "40", "53"], correctAnswerIndex: 1, timeLimit: 25, maxPoints: 20 },
+            { type: 'arithmetic', question: "50% of 60 is equal to what percent of 30?", options: ["50%", "75%", "100%", "150%"], correctAnswerIndex: 2, timeLimit: 30, maxPoints: 22 },
+            { type: 'arithmetic', question: "A train travels at 80km/hr for 2.5 hours. What distance does it cover?", options: ["160 km", "200 km", "240 km", "180 km"], correctAnswerIndex: 1, timeLimit: 25, maxPoints: 20 },
+            { type: 'arithmetic', question: "A pizza has 8 slices. You eat 3 slices. What fraction of the pizza is left?", options: ["3/8", "5/8", "1/2", "3/5"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 15 },
+            { type: 'arithmetic', question: "If x = 3, and y = x + 2, what is the value of y?", options: ["3", "4", "5", "6"], correctAnswerIndex: 2, timeLimit: 10, maxPoints: 12 },
+            { type: 'arithmetic', question: "If 3 shirts cost ₹300, how much would 5 shirts cost?", options: ["₹400", "₹450", "₹500", "₹600"], correctAnswerIndex: 2, timeLimit: 25, maxPoints: 20 },
+            { type: 'arithmetic', question: "What is the next prime number after 17?", options: ["18", "19", "20", "21"], correctAnswerIndex: 1, timeLimit: 20, maxPoints: 18 },
+            { type: 'arithmetic', question: "A square has an area of 49 square units. What is the length of one of its sides?", options: ["6 units", "7 units", "8 units", "9 units"], correctAnswerIndex: 1, timeLimit: 15, maxPoints: 15 },
+            { type: 'arithmetic', question: "25% of what number is 10?", options: ["20", "30", "40", "50"], correctAnswerIndex: 2, timeLimit: 20, maxPoints: 18 },
+            { type: 'arithmetic', question: "Which of these numbers is divisible by BOTH 3 AND 4: 18, 20, 24, 30?", options: ["18", "20", "24", "30"], correctAnswerIndex: 2, timeLimit: 25, maxPoints: 20 },
+
+            // --- OCR Q41-50: Speed & Reflex ---
+            { type: 'reflex', instruction: "Click when the 🔴 appears!", initialColor: '🔵', activeColor: '🔴', minDelayToActive: 1500, maxDelayToActive: 4000, reactionTimeLimitMs: 1800, maxPoints: 20 },
+            { type: 'logic', question: "QUICK! Is the Sun (☀️) a star?", options: ["Yes", "No"], correctAnswerIndex: 0, timeLimit: 5, maxPoints: 15 },
+            { type: 'reflex', instruction: "Click TARGET when it appears!", initialColor: 'WAIT...', activeColor: 'TARGET!', minDelayToActive: 1200, maxDelayToActive: 3500, reactionTimeLimitMs: 1500, maxPoints: 22 },
+            { type: 'memory', instruction: "Colors will flash briefly: 🟥 then 🟩 then 🟦. Remember the first one.", itemsToMemorize: ["🟥", "🟩", "🟦"], memorizeDuration: 1500, recallQuestion: "Which color flashed first?", options: ["🟥 (Red)", "🟩 (Green)", "🟦 (Blue)", "🟨 (Yellow)"], correctAnswerIndex: 0, timeLimit: 5, maxPoints: 18 },
+            { type: 'arithmetic', question: "Is 7 × 8 = 56? Quick!", options: ["True", "False"], correctAnswerIndex: 0, timeLimit: 4, maxPoints: 15 },
+            { type: 'logic', question: "The number is 47. Is it Odd or Even? Tap fast!", options: ["Odd", "Even"], correctAnswerIndex: 0, timeLimit: 4, maxPoints: 15 },
+            { type: 'memory', instruction: "Quickly view these fruits: 🍎🍌🍓🍍. One will be different in the question.", itemsToMemorize: ["🍎", "🍌", "🍓", "🍍"], memorizeDuration: 2000, recallQuestion: "Which fruit is an intruder if the original set was 🍎🍌🍓🍍 and options are current display?", options: ["🍎", "🍌", "🍊 (Orange)", "🍍"], correctAnswerIndex: 2, timeLimit: 8, maxPoints: 18 },
+            { type: 'shape_logic', instruction: "Match this shape: ◇ (Diamond). Quick!", question: "Which option is ◇?", options: ["○", "□", "◇", "△"], correctAnswerIndex: 2, timeLimit: 5, maxPoints: 15 },
+            { type: 'color_stroop_text', question: "Task: Select the WORD 'BLUE'. Presented: <span style='color:red; font-weight:bold;'>BLUE</span>. Your choice must be the word itself.", options: ["BLUE", "RED", "GREEN", "YELLOW"], correctAnswerIndex: 0, timeLimit: 10, maxPoints: 18 },
+            { type: 'memory', instruction: "A number will flash very quickly! Remember it.", itemsToMemorize: ["42"], memorizeDuration: 750, recallQuestion: "What number just flashed?", options: ["24", "42", "7", "35"], correctAnswerIndex: 1, timeLimit: 5, maxPoints: 20 }
+        ];
+
+
+        // --- Achievements & High Score Data ---
+        let achievements = {
+            firstGame: { name: "Welcome Challenger!", unlocked: false, description: "Complete your first game." },
+            streakMaster: { name: "Streak Master!", unlocked: false, description: "Achieve a 5-answer streak." },
+            highScorer: { name: "High Scorer!", unlocked: false, description: "Score over 70% in any game." },
+            marathonRunner: { name: "Marathon Runner!", unlocked: false, description: "Complete a 50-question game." },
+            perfect10: { name: "Perfect 10!", unlocked: false, description: "Score 100% on a 10-question game." }
+        };
+        let highScores = { 10: 0, 25: 0, 50: 0 };
+        let gamesCompleted = 0;
+
+
+        const personalityProfiles = [
+            { minPercentage: 0, title: "Emerging Thinker", description: "You're just beginning to explore your cognitive abilities. Keep practicing to sharpen your skills!" },
+            { minPercentage: 30, title: "Steady Problem-Solver", description: "You have a solid foundation in logical thinking and memory. With focus, you can tackle many challenges." },
+            { minPercentage: 50, title: "Quick Witted", description: "You demonstrate good analytical skills and quick reflexes. You're adept at spotting patterns and making connections." },
+            { minPercentage: 70, title: "Insightful Analyst", description: "You possess strong deductive reasoning and a sharp memory. Complex problems are your forte." },
+            { minPercentage: 85, title: "Logic Virtuoso", description: "Your cognitive abilities are exceptionally well-developed. You navigate intricate challenges with speed and precision!" }
+        ];
+        
+        // --- Initialization ---
+        window.onload = () => {
+            loadGameData();
+            updateHighScoreDisplay();
+            document.querySelector(`.num-questions-button[data-count="10"]`).classList.add('selected');
+            if (typeof Tone !== 'undefined' && !backgroundMusicSynth) {
+                setupAudio();
+            }
+        };
+
+        // --- Local Storage ---
+        function saveGameData() {
+            localStorage.setItem('mindSparkAchievements_qMode_v4_emoji', JSON.stringify(achievements));
+            localStorage.setItem('mindSparkHighScores_qMode_v4_emoji', JSON.stringify(highScores));
+            localStorage.setItem('mindSparkGamesCompleted_qMode_v4_emoji', gamesCompleted.toString());
+        }
+        function loadGameData() {
+            const savedAchievements = localStorage.getItem('mindSparkAchievements_qMode_v4_emoji');
+            if (savedAchievements) achievements = JSON.parse(savedAchievements);
+            const savedHighScores = localStorage.getItem('mindSparkHighScores_qMode_v4_emoji');
+            if (savedHighScores) highScores = JSON.parse(savedHighScores);
+            const savedGamesCompleted = localStorage.getItem('mindSparkGamesCompleted_qMode_v4_emoji');
+            if (savedGamesCompleted) gamesCompleted = parseInt(savedGamesCompleted);
+        }
+
+        // --- Audio Setup ---
+        function setupAudio() {
+            if (typeof Tone === 'undefined' || backgroundMusicSynth) return;
+            correctSound = new Tone.Synth({ oscillator: {type: 'sine'}, envelope: {attack: 0.01, decay: 0.1, sustain: 0, release: 0.2}, volume: -10 }).toDestination();
+            incorrectSound = new Tone.Synth({ oscillator: {type: 'square'}, envelope: {attack: 0.01, decay: 0.2, sustain: 0, release: 0.2}, volume: -15 }).toDestination();
+            clickSound = new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.1, volume: -10 }).toDestination();
+            
+            backgroundMusicSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.8, decay: 0.2, sustain: 0.5, release: 1.2 },
+                volume: -25 
+            }).toDestination();
+            const musicSequence = new Tone.Sequence((time, note) => {
+                backgroundMusicSynth.triggerAttackRelease(note, "2n", time);
+            }, ["C3", "E3", "G3", "C4", "G3", "E3"], "1m");
+            musicSequence.loop = true;
+            Tone.Transport.bpm.value = 70;
+             if (Tone.Transport.state !== "started" && musicPlaying === true) {
+                Tone.Transport.start();
+            } else if (musicPlaying === false && Tone.Transport.state === "started") {
+                Tone.Transport.pause();
+            }
+        }
+        function playSound(sound, note = "C4", duration = "8n") {
+            if (sound && typeof Tone !== 'undefined' && Tone.context.state === 'running') {
+                if (sound instanceof Tone.PluckSynth) sound.triggerAttack(note);
+                else sound.triggerAttackRelease(note, duration);
+            }
+        }
+        function toggleMusic() {
+            if (typeof Tone === 'undefined') return;
+            if (!backgroundMusicSynth) setupAudio(); 
+
+            if (Tone.Transport.state === "started") {
+                Tone.Transport.pause();
+                musicPlaying = false;
+                musicToggleButton.textContent = "Music: OFF";
+            } else {
+                Tone.Transport.start();
+                musicPlaying = true;
+                musicToggleButton.textContent = "Music: ON";
+            }
+        }
+        musicToggleButton.addEventListener('click', () => {
+            if (typeof Tone === 'undefined') { alert("Audio library not loaded."); return; }
+            if (Tone.context.state !== 'running') {
+                Tone.start().then(() => {
+                    console.log("AudioContext started.");
+                    if (!backgroundMusicSynth) setupAudio(); 
+                    toggleMusic();
+                }).catch(e => console.error("Error starting AudioContext:", e));
+            } else {
+                toggleMusic();
+            }
+        });
+        
+        // --- Number of Questions Handling ---
+        function selectNumQuestions(count, buttonEl) {
+            playSound(clickSound, "A3");
+            NUMBER_OF_PUZZLES_PER_GAME = count;
+            document.querySelectorAll('.num-questions-button').forEach(btn => btn.classList.remove('selected'));
+            buttonEl.classList.add('selected');
+            updateHighScoreDisplay();
+        }
+        function updateHighScoreDisplay() {
+            highScoreDisplayEl.textContent = `High Score (${NUMBER_OF_PUZZLES_PER_GAME} Qs): ${highScores[NUMBER_OF_PUZZLES_PER_GAME] || 0}`;
+        }
+
+        // --- Game Flow ---
+        function transitionScreen(screenToHide, screenToShow) {
+            screenToHide.classList.remove('fade-in');
+            screenToHide.classList.add('fade-out');
+            setTimeout(() => {
+                screenToHide.classList.add('hidden');
+                screenToHide.classList.remove('fade-out');
+                screenToShow.classList.remove('hidden');
+                screenToShow.classList.add('fade-in');
+                mainContainer.style.justifyContent = (screenToShow === resultsScreenDiv) ? 'flex-start' : 'center';
+            }, 300);
+        }
+
+        function selectPuzzlesForGame() {
+            const numToSelect = Math.min(NUMBER_OF_PUZZLES_PER_GAME, masterPuzzleList.length);
+            if (numToSelect < NUMBER_OF_PUZZLES_PER_GAME) {
+                console.warn(`Warning: Requested ${NUMBER_OF_PUZZLES_PER_GAME} puzzles, but only ${numToSelect} are available in master list.`);
+            }
+            const shuffled = [...masterPuzzleList].sort(() => 0.5 - Math.random());
+            gamePuzzles = shuffled.slice(0, numToSelect);
+
+            currentMaxPossibleScore = 0;
+            gamePuzzles.forEach(p => currentMaxPossibleScore += p.maxPoints);
+        }
+
+        function startGame() {
+            playSound(clickSound, "C4");
+            if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
+                 Tone.start().then(() => { if (!backgroundMusicSynth) setupAudio(); if(musicPlaying && Tone.Transport.state !== 'started') Tone.Transport.start(); })
+                 .catch(e => console.error("Error starting AudioContext on game start:", e));
+            } else {
+                if (musicPlaying && Tone.Transport.state !== 'started' && backgroundMusicSynth) Tone.Transport.start();
+            }
+            
+            selectPuzzlesForGame();
+            if (gamePuzzles.length < 1) {
+                alert("Not enough puzzles available in the master list to start the game!");
+                return;
+            }
+
+            transitionScreen(welcomeScreenDiv, puzzleScreenDiv);
+            currentPuzzleIndex = 0;
+            score = 0;
+            currentStreak = 0;
+            updateStreakDisplay();
+            loadPuzzle(currentPuzzleIndex);
+        }
+
+        function cleanupPreviousPuzzle() {
+            clearInterval(timerInterval);
+            clearTimeout(reflexColorChangeTimeoutId);
+            clearTimeout(reflexReactionTimeoutId);
+            reflexPuzzleActive = false;
+            if (reflexTargetEl && reflexTargetEl.parentNode) {
+                reflexTargetEl.parentNode.removeChild(reflexTargetEl);
+                reflexTargetEl = null;
+            }
+            reflexFeedbackEl.textContent = '';
+            hintUsedThisPuzzle = false;
+            hintButton.disabled = false;
+        }
+
+        function loadPuzzle(index) {
+            cleanupPreviousPuzzle();
+            if (index >= gamePuzzles.length) {
+                endGame();
+                return;
+            }
+            const puzzle = gamePuzzles[index];
+            progressIndicatorEl.textContent = `Puzzle ${index + 1} of ${gamePuzzles.length}`;
+            puzzleInstructionEl.innerHTML = puzzle.instruction || ''; 
+            memoryItemsDisplayEl.innerHTML = ''; 
+            memoryItemsDisplayEl.classList.add('hidden');
+            puzzleQuestionEl.innerHTML = '';  
+            puzzleQuestionEl.classList.add('hidden');
+            answerOptionsEl.innerHTML = '';
+            answerOptionsEl.classList.add('hidden');
+            timerEl.style.visibility = 'visible';
+            
+            const noHintTypes = ['reflex', 'memory_memorize_phase'];
+            hintButton.style.display = noHintTypes.includes(puzzle.type) ? 'none' : 'inline-block';
+
+            if (puzzle.type === 'reflex') loadReflexPuzzle(puzzle);
+            else if (puzzle.type === 'memory') loadMemoryPuzzle(puzzle);
+            else loadStandardPuzzle(puzzle); 
+        }
+
+        function loadStandardPuzzle(puzzle) {
+            puzzleQuestionEl.innerHTML = puzzle.question; 
+            puzzleQuestionEl.classList.remove('hidden');
+            answerOptionsEl.classList.remove('hidden');
+
+            puzzle.options.forEach((optionText, i) => {
+                const button = document.createElement('button');
+                button.classList.add('answer-button');
+                button.dataset.index = i;
+                button.innerHTML = optionText; 
+                
+                button.onclick = () => { playSound(clickSound, "G3"); selectAnswer(i, puzzle.correctAnswerIndex, button); };
+                answerOptionsEl.appendChild(button);
+            });
+            startTimer(puzzle.timeLimit || DEFAULT_PUZZLE_TIME_LIMIT_SECONDS);
+        }
+
+        function loadMemoryPuzzle(puzzle) { 
+            puzzleInstructionEl.innerHTML = puzzle.instruction || "Memorize the items below:"; 
+            memoryItemsDisplayEl.classList.remove('hidden');
+            puzzle.itemsToMemorize.forEach(itemText => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'memory-item'; 
+                itemDiv.innerHTML = itemText; 
+                memoryItemsDisplayEl.appendChild(itemDiv);
+            });
+            timerEl.style.visibility = 'hidden';
+            answerOptionsEl.classList.add('hidden');
+            const originalType = puzzle.type; 
+            puzzle.type = 'memory_memorize_phase'; 
+            hintButton.style.display = 'none';
+
+
+            setTimeout(() => {
+                puzzle.type = originalType; 
+                puzzleInstructionEl.innerHTML = ''; 
+                memoryItemsDisplayEl.innerHTML = '';
+                memoryItemsDisplayEl.classList.add('hidden');
+                puzzleQuestionEl.innerHTML = puzzle.recallQuestion; 
+                puzzleQuestionEl.classList.remove('hidden');
+                answerOptionsEl.classList.remove('hidden');
+                hintButton.style.display = 'inline-block'; 
+
+                puzzle.options.forEach((option, i) => {
+                    const button = document.createElement('button');
+                    button.classList.add('answer-button');
+                    button.innerHTML = option; 
+                    button.dataset.index = i;
+                    button.onclick = () => { playSound(clickSound, "G3"); selectAnswer(i, puzzle.correctAnswerIndex, button); };
+                    answerOptionsEl.appendChild(button);
+                });
+                timerEl.style.visibility = 'visible';
+                startTimer(puzzle.timeLimit || DEFAULT_PUZZLE_TIME_LIMIT_SECONDS);
+            }, puzzle.memorizeDuration);
+        }
+
+        function loadReflexPuzzle(puzzle) {
+            puzzleInstructionEl.innerHTML = puzzle.instruction; 
+            timerEl.style.visibility = 'hidden';
+            answerOptionsEl.classList.add('hidden');
+            puzzleQuestionEl.classList.add('hidden');
+            memoryItemsDisplayEl.classList.add('hidden');
+            hintButton.style.display = 'none';
+
+            reflexTargetEl = document.createElement('div');
+            reflexTargetEl.className = 'reflex-target';
+            
+            if (puzzle.initialColor && puzzle.initialColor.length > 1 && !puzzle.initialColor.startsWith('#')) { 
+                reflexTargetEl.textContent = puzzle.initialColor; 
+                reflexTargetEl.style.backgroundColor = '#e9ecef'; 
+                reflexTargetEl.style.color = '#333'; 
+            } else if (puzzle.initialColor) {
+                reflexTargetEl.style.backgroundColor = puzzle.initialColor; 
+                reflexTargetEl.textContent = "Wait..."; 
+            } else { 
+                 reflexTargetEl.textContent = "Wait...";
+                 reflexTargetEl.style.backgroundColor = '#e9ecef'; 
+                 reflexTargetEl.style.color = '#333'; 
+            }
+            
+            puzzleContentEl.insertBefore(reflexTargetEl, reflexFeedbackEl);
+
+            reflexTargetEl.onclick = () => {
+                if (reflexPuzzleActive) { 
+                    clearTimeout(reflexReactionTimeoutId);
+                    const reactionTime = performance.now() - reflexReactionStartTimestamp;
+                    processReflexResult(reactionTime, puzzle);
+                } else { 
+                    playSound(incorrectSound, "C3");
+                    clearTimeout(reflexColorChangeTimeoutId); 
+                    processReflexResult(0, puzzle, true); 
+                }
+            };
+
+            const delay = Math.random() * (puzzle.maxDelayToActive - puzzle.minDelayToActive) + puzzle.minDelayToActive;
+            reflexColorChangeTimeoutId = setTimeout(() => {
+                if (!reflexTargetEl) return; 
+                 if (puzzle.activeColor && puzzle.activeColor.length > 1 && !puzzle.activeColor.startsWith('#')) {
+                    reflexTargetEl.textContent = puzzle.activeColor; 
+                    reflexTargetEl.style.backgroundColor = '#28a745'; 
+                    reflexTargetEl.style.color = 'white';
+                } else if (puzzle.activeColor) {
+                    reflexTargetEl.style.backgroundColor = puzzle.activeColor; 
+                    reflexTargetEl.textContent = "Click!";
+                } else { 
+                    reflexTargetEl.textContent = "Click!";
+                    reflexTargetEl.style.backgroundColor = '#28a745';
+                    reflexTargetEl.style.color = 'white';
+                }
+                reflexReactionStartTimestamp = performance.now();
+                reflexPuzzleActive = true;
+                reflexReactionTimeoutId = setTimeout(() => {
+                    if (reflexPuzzleActive) { 
+                        playSound(incorrectSound, "D3");
+                        processReflexResult(puzzle.reactionTimeLimitMs + 1, puzzle, false, true); 
+                    }
+                }, puzzle.reactionTimeLimitMs);
+            }, delay);
+        }
+        
+        // --- Answering & Scoring ---
+        function processReflexResult(reactionTime, puzzle, foul = false, timeout = false) {
+            reflexPuzzleActive = false; 
+            clearTimeout(reflexColorChangeTimeoutId); 
+            clearTimeout(reflexReactionTimeoutId); 
+
+            if (reflexTargetEl) {
+                reflexTargetEl.onclick = null; 
+                reflexTargetEl.style.opacity = '0.5'; 
+            }
+
+            let pointsEarned = 0;
+            let feedbackMessage = "";
+            const maxPoints = puzzle.maxPoints;
+
+            if (foul) {
+                feedbackMessage = "Clicked too early! 0 points.";
+                currentStreak = 0;
+            } else if (timeout || reactionTime > puzzle.reactionTimeLimitMs) {
+                feedbackMessage = `Too slow! > ${puzzle.reactionTimeLimitMs}ms. 0 points.`;
+                currentStreak = 0;
+            } else {
+                reactionTime = Math.round(reactionTime); 
+                if (reactionTime < 250) pointsEarned = maxPoints;
+                else if (reactionTime < 350) pointsEarned = Math.round(maxPoints * 0.8);
+                else if (reactionTime < 500) pointsEarned = Math.round(maxPoints * 0.6);
+                else if (reactionTime < 800) pointsEarned = Math.round(maxPoints * 0.4);
+                else pointsEarned = Math.round(maxPoints * 0.2); 
+                
+                if (pointsEarned > 0) {
+                    playSound(correctSound, "G5");
+                    currentStreak++;
+                    if (currentStreak > 1) pointsEarned += STREAK_BONUS_POINTS * (currentStreak -1) ; 
+                    feedbackMessage = `Reaction: ${reactionTime}ms. +${pointsEarned} points!`;
+                } else { 
+                    playSound(incorrectSound, "E3");
+                    currentStreak = 0;
+                    feedbackMessage = `Reaction: ${reactionTime}ms. 0 points.`;
+                }
+            }
+            score += pointsEarned;
+            reflexFeedbackEl.textContent = feedbackMessage;
+            updateStreakDisplay();
+            setTimeout(() => {
+                currentPuzzleIndex++;
+                loadPuzzle(currentPuzzleIndex);
+            }, 2000); 
+        }
+
+        function selectAnswer(selectedOptionIndex, correctAnswerIndex, clickedButton) {
+            clearInterval(timerInterval);
+            const puzzle = gamePuzzles[currentPuzzleIndex];
+            const timeLimit = puzzle.timeLimit || DEFAULT_PUZZLE_TIME_LIMIT_SECONDS;
+
+            const allAnswerButtons = answerOptionsEl.querySelectorAll('.answer-button');
+            allAnswerButtons.forEach(btn => btn.classList.add('disabled')); 
+            hintButton.disabled = true;
+
+            let pointsEarned = 0;
+            const maxPointsForPuzzle = puzzle.maxPoints;
+
+            if (selectedOptionIndex === correctAnswerIndex) {
+                playSound(correctSound, "C5");
+                currentStreak++;
+                
+                const baseRatio = 0.5; 
+                const speedRatio = 0.5;
+
+                let basePoints = Math.round(maxPointsForPuzzle * baseRatio);
+                let speedBonus = 0;
+
+                if (timeLimit > 0 && timeLeft >= 0) { 
+                    const timeFractionRemaining = Math.max(0, timeLeft / timeLimit); 
+                    speedBonus = Math.round((maxPointsForPuzzle * speedRatio) * timeFractionRemaining);
+                }
+                pointsEarned = basePoints + speedBonus;
+                if (currentStreak > 1) { 
+                    pointsEarned += STREAK_BONUS_POINTS * (currentStreak - 1); 
+                }
+                clickedButton.classList.add('correct');
+            } else {
+                playSound(incorrectSound, "F3");
+                currentStreak = 0;
+                clickedButton.classList.add('incorrect');
+                 const correctBtn = answerOptionsEl.querySelector(`.answer-button[data-index="${correctAnswerIndex}"]`);
+                 if (correctBtn) correctBtn.classList.add('correct'); 
+            }
+            if (hintUsedThisPuzzle) {
+                pointsEarned = Math.max(0, pointsEarned - HINT_PENALTY_POINTS); 
+            }
+            score += pointsEarned;
+            updateStreakDisplay();
+            setTimeout(() => {
+                currentPuzzleIndex++;
+                loadPuzzle(currentPuzzleIndex);
+            }, 1500);
+        }
+        
+        function useHint() {
+            playSound(clickSound, "D3");
+            if (hintUsedThisPuzzle || currentPuzzleIndex >= gamePuzzles.length) return;
+            const puzzle = gamePuzzles[currentPuzzleIndex];
+            if (puzzle.type === 'reflex' || puzzle.type === 'memory_memorize_phase') return; 
+
+            hintUsedThisPuzzle = true;
+            hintButton.disabled = true; 
+
+            if (puzzle.type === 'memory' && puzzle.recallQuestion) { 
+                const correctItemText = puzzle.itemsToMemorize[Math.floor(Math.random() * puzzle.itemsToMemorize.length)]; 
+                const tempHintItem = document.createElement('div');
+                tempHintItem.className = 'memory-item hint-reveal'; 
+                tempHintItem.textContent = `Hint: Remember seeing "${correctItemText}"?`;
+                
+                const oldInstruction = puzzleInstructionEl.innerHTML;
+                puzzleInstructionEl.innerHTML = tempHintItem.outerHTML; 
+                setTimeout(() => {
+                    puzzleInstructionEl.innerHTML = oldInstruction; 
+                }, 2500);
+
+            } else if (puzzle.options) { 
+                const answerButtons = Array.from(answerOptionsEl.querySelectorAll('.answer-button:not(.disabled):not(.hint-removed)'));
+                if (answerButtons.length > 2) { 
+                    let removedCount = 0;
+                    for (let i = 0; i < answerButtons.length; i++) {
+                        const btnIndex = parseInt(answerButtons[i].dataset.index);
+                        if (btnIndex !== puzzle.correctAnswerIndex) {
+                            answerButtons[i].classList.add('hint-removed');
+                            removedCount++;
+                            break; 
+                        }
+                    }
+                    if (removedCount === 0 && answerButtons.length > 0) { 
+                        const firstRemovable = answerButtons.find(btn => parseInt(btn.dataset.index) !== puzzle.correctAnswerIndex);
+                        if (firstRemovable) {
+                            firstRemovable.classList.add('hint-removed');
+                        } else if(answerButtons.length > 1) { 
+                             answerButtons[0].classList.add('hint-removed'); 
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateStreakDisplay() {
+            streakCounterEl.textContent = `Streak: ${currentStreak}`;
+            if (currentStreak >= 5 && !achievements.streakMaster.unlocked) {
+                achievements.streakMaster.unlocked = true;
+            }
+        }
+
+        // --- Timer ---
+        function startTimer(duration) {
+            timeLeft = duration;
+            updateTimerDisplay();
+            clearInterval(timerInterval); 
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+        function updateTimerDisplay() {
+            const displayTime = Math.max(0, timeLeft); 
+            const minutes = Math.floor(displayTime / 60);
+            const seconds = displayTime % 60;
+            timerEl.textContent = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        function handleTimeUp() {
+            playSound(incorrectSound, "A2");
+            currentStreak = 0; 
+            updateStreakDisplay();
+            const allAnswerButtons = answerOptionsEl.querySelectorAll('.answer-button');
+            allAnswerButtons.forEach(btn => btn.classList.add('disabled')); 
+            hintButton.disabled = true;
+
+            const puzzle = gamePuzzles[currentPuzzleIndex];
+            if (puzzle && puzzle.options && puzzle.options.length > 0 && puzzle.correctAnswerIndex !== undefined) {
+                 const correctBtn = answerOptionsEl.querySelector(`.answer-button[data-index="${puzzle.correctAnswerIndex}"]`);
+                 if (correctBtn) correctBtn.classList.add('correct'); 
+            }
+            puzzleQuestionEl.innerHTML += "<br><span style='color:red;'>Time's Up!</span>";
+
+            setTimeout(() => {
+                currentPuzzleIndex++;
+                loadPuzzle(currentPuzzleIndex);
+            }, 1500); 
+        }
+
+        // --- End Game & Results ---
+        function calculateCognitivePerformanceIndex(currentScore, maxScore) {
+            const minCPI = 70; const maxCPI = 130; 
+            if (maxScore === 0) return minCPI; 
+            const scorePercentage = Math.max(0, Math.min(100, (currentScore / maxScore) * 100));
+            return Math.round(minCPI + (scorePercentage / 100) * (maxCPI - minCPI));
+        }
+        function getPersonalityProfile(currentScore, maxScore) {
+            if (maxScore === 0) return personalityProfiles[0]; 
+            const scorePercentage = (currentScore / maxScore) * 100;
+            let profile = personalityProfiles[0]; 
+            for (let i = personalityProfiles.length - 1; i >= 0; i--) {
+                if (scorePercentage >= personalityProfiles[i].minPercentage) {
+                    profile = personalityProfiles[i]; break;
+                }
+            }
+            return profile;
+        }
+        
+        function checkAchievements(finalScore, maxScore, numQuestions) {
+            achievements.firstGame.unlocked = true; 
+            gamesCompleted++;
+
+            const scorePercentage = maxScore > 0 ? (finalScore / maxScore) * 100 : 0;
+
+            if (scorePercentage > 70 && !achievements.highScorer.unlocked) {
+                achievements.highScorer.unlocked = true;
+            }
+            if (numQuestions === 50 && !achievements.marathonRunner.unlocked) { 
+                achievements.marathonRunner.unlocked = true;
+            }
+            if (numQuestions === 10 && scorePercentage >= 99.9 && !achievements.perfect10.unlocked) { 
+                achievements.perfect10.unlocked = true;
+            }
+        }
+
+        function endGame() {
+            cleanupPreviousPuzzle();
+            clearInterval(timerInterval);
+            
+            if (score > (highScores[NUMBER_OF_PUZZLES_PER_GAME] || 0) ) {
+                highScores[NUMBER_OF_PUZZLES_PER_GAME] = score;
+            }
+            checkAchievements(score, currentMaxPossibleScore, NUMBER_OF_PUZZLES_PER_GAME);
+            saveGameData(); 
+
+            const cpiEstimate = calculateCognitivePerformanceIndex(score, currentMaxPossibleScore);
+            const personality = getPersonalityProfile(score, currentMaxPossibleScore);
+
+            let achievementsHTML = '<ul class="achievement-list">';
+            for (const key in achievements) {
+                achievementsHTML += `<li class="achievement-item ${achievements[key].unlocked ? '' : 'locked'}" title="${achievements[key].description}">${achievements[key].name}</li>`;
+            }
+            achievementsHTML += '</ul>';
+
+            resultsScreenDiv.innerHTML = `
+                <h1>Test Complete!</h1>
+                <p>Game Mode: ${NUMBER_OF_PUZZLES_PER_GAME} Questions</p>
+                <p>Your final score is: <span class="score-value">${score} / ${currentMaxPossibleScore}</span></p>
+                <p>High Score (${NUMBER_OF_PUZZLES_PER_GAME} Qs): <span class="score-value">${highScores[NUMBER_OF_PUZZLES_PER_GAME] || 0}</span></p>
+                <p>Cognitive Performance Index: <span class="cpi-estimate">${cpiEstimate}</span></p>
+                <p class="disclaimer">This index is a general indicator based on game performance, not a formal IQ score.</p>
+                <h2 class="personality-title">${personality.title}</h2>
+                <p class="personality-description">${personality.description}</p>
+                <div class="achievements-section">
+                    <h3>Achievements:</h3>
+                    ${achievementsHTML}
+                </div>
+                <div class="results-buttons-container">
+                    <button class="results-button" onclick="resetGame()">Play Again?</button>
+                    <button class="results-button share" onclick="shareResults()">Share Results</button>
+                </div>
+            `;
+            transitionScreen(puzzleScreenDiv, resultsScreenDiv);
+        }
+        
+        function shareResults() {
+            playSound(clickSound);
+            const cpiEstimate = calculateCognitivePerformanceIndex(score, currentMaxPossibleScore);
+            const achievementsUnlockedCount = Object.values(achievements).filter(a=>a.unlocked).length;
+            const shareText = `I scored ${score}/${currentMaxPossibleScore} (CPI: ${cpiEstimate}) on the Mind Spark Challenge (${NUMBER_OF_PUZZLES_PER_GAME} Qs) and unlocked ${achievementsUnlockedCount} achievements! Try it!`;
+            
+            alert(shareText + "\n(Sharing functionality is a placeholder. You can copy this text!)");
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mind Spark Challenge Results',
+                    text: shareText,
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(console.error);
+            }
+        }
+
+        function resetGame() {
+            playSound(clickSound);
+            resultsScreenDiv.classList.add('hidden');
+            resultsScreenDiv.classList.remove('fade-in', 'fade-out');
+            puzzleScreenDiv.classList.add('hidden');
+            puzzleScreenDiv.classList.remove('fade-in', 'fade-out');
+            
+            welcomeScreenDiv.classList.remove('hidden', 'fade-out');
+            welcomeScreenDiv.classList.add('fade-in');
+            mainContainer.style.justifyContent = 'center'; 
+            updateHighScoreDisplay(); 
+        }
+    </script>
+</body>
+</html>
